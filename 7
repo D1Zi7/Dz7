@@ -1,0 +1,62 @@
+import java.util.Scanner;
+
+public class Main {
+    private static double f(double x) {
+        double tanX = Math.tan(x);
+        if (Math.abs(tanX) < 1e-12 || Double.isInfinite(1.0 / tanX)) {
+            return Double.POSITIVE_INFINITY;
+        }
+        return 2.0 * x - (1.0 / tanX);
+    }
+    public static double chordMethod(double a, double b, double epsilon, int maxIter) {
+        double fa = f(a);
+        double fb = f(b);
+        double xPrev = a;
+        double xCurr = b;
+        for (int i = 0; i < maxIter; i++) {
+            fa = f(xPrev);
+            fb = f(xCurr);
+            if (Math.abs(fb - fa) < 1e-12) {
+                break;
+            }
+            double xNext = xCurr - fb * (xCurr - xPrev) / (fb - fa);
+            if (Math.abs(xNext - xCurr) < epsilon) {
+                return xNext;
+            }
+            if (f(xNext) * fa < 0) {
+                xCurr = xNext; 
+            } else {
+                xPrev = xNext; 
+            }
+        }
+        return xCurr;
+    }
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Метод хорд для f(x) = 2x - 1/tan(x) ");
+        System.out.println("Внимание: x=0 недопустим (tan(0)=0).");
+        System.out.println("Не вводить 0\n");
+        System.out.print("Введите  'a' : ");
+        double a = scanner.nextDouble();
+        if (a == 0.0) {
+            a = 0.0001;
+            System.out.println("Значение 'a' заменено .");
+        }
+        System.out.print("Введите 'b' : ");
+        double b = scanner.nextDouble();
+        System.out.print("Введите точность 'epsilon' : ");
+        double epsilon = scanner.nextDouble();
+        System.out.print("Введите макс. число итераций ): ");
+        int maxIter = scanner.nextInt();
+        System.out.print("Введите x0 : ");
+        scanner.nextDouble(); 
+        double root = chordMethod(a, b, epsilon, maxIter);
+        System.out.println("\n==========================================");
+        System.out.printf("ОТРЕЗОК: [%.4f; %.4f]%n", a, b);
+        System.out.printf("НАЙДЕННЫЙ КОРЕНЬ: %.6f%n", root);
+        System.out.printf("ЗНАЧЕНИЕ ФУНКЦИИ f(%.6f): %.6e%n", root, f(root));
+        System.out.println("==========================================");
+
+        scanner.close();
+    }
+}
